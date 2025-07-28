@@ -5,7 +5,7 @@ import { BatchController } from './batch.controller';
 import { DatabaseModule } from './database/database.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MongooseModule } from '@nestjs/mongoose';
-import PropertySchema from 'apps/nestar-api/src/schemas/Property.model';
+import PropertySchema from 'apps/nestar-api/src/schemas/Car.model';
 import MemberSchema from 'apps/nestar-api/src/schemas/Member.model';
 
 @Module({
