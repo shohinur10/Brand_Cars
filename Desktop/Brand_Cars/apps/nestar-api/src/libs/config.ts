@@ -3,14 +3,14 @@ import{ObjectId} from 'bson';//Ko‘p hollarda string ko‘rinishidagi id larni 
 export const availableAgentSorts =["createdAt", "updateAt", "memberLikes", "memberViews","memberRanking"] ;
 export const availableMemberSorts =["createdAt", "updateAt", "memberLikes", "memberViews"];
 
-export const availableOptions =['propertyBarter','propertyRent'];
-export const availablePropertySorts =[
+export const availableOptions =['CarLoan','CarRent','CarInsurance','CarExchange','CarDelivery','CarMaintenance','CarAccessories','CarParts','CarServices'];
+export const availableCarSorts =[
 	"createdAt",
 	"updateAt",
-	'propertyLikes',
-	'propertyViews',
-	'propertyRank',
-	'propertyPrice',
+	'carLikes',
+	'carViews',
+	'carRank',
+	'carPrice',
 ]
 export const availableBoardArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews'];
 export const availableCommentSorts = ['createdAt', 'updatedAt'];
@@ -35,7 +35,7 @@ export const shapeIntoMongoObjectId= (target: any) => {
 
  export const lookupAuthMemberLiked = (
 	memberId: T,// Foydalanuvchining ID si (like qilgan odam)
-	targetRefId: string = '$_id' // targetRefId — bu "qaysi element (property, post, article va hokazo) like qilinganini" aniqlash uchun ishlatiladi.
+	targetRefId: string = '$_id' // targetRefId — bu "qaysi element (car, post, article va hokazo) like qilinganini" aniqlash uchun ishlatiladi.
   ) => {
 	return {
 	  $lookup: {
@@ -141,17 +141,17 @@ export const lookupFollowerData = {
 export const lookupFavorite = {
 	$lookup: {
 		from: 'members',
-		localField: 'favoriteProperty.memberId',// favoriteProperty.memberId ichidan malumot qidirib uni favoriteProperty.memberData joylab beryapti 
+		localField: 'favoriteCar.memberId',// favorite Car.memberId ichidan malumot qidirib uni favorite Car.memberData joylab beryapti 
 		foreignField: '_id',
-		as: 'favoriteProperty.memberData',
+		as: 'favoriteACar.memberData',
 	},
 };
 
 export const lookupVisit = {
 	$lookup: {
 		from: 'members',
-		localField: 'visitedProperty.memberId',
+		localField: 'visitedCar.memberId',
 		foreignField: '_id',
-		as: 'visitedProperty.memberData',
+		as: 'visitedCar.memberData',
 	},
 };

@@ -4,10 +4,10 @@ import { Model, ObjectId } from 'mongoose';
 import { View } from '../../libs/dto/view/view';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { T } from '../../libs/types/common';
-import { OrdinaryInquiry } from '../../libs/dto/property/car.input';
-import { Properties } from '../../libs/dto/property/property';
+import { OrdinaryInquiry } from '../../libs/dto/car/car.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { lookupVisit } from '../../libs/config';
+import { Cars } from '../../libs/dto/car/car';
 
 @Injectable()
 export class ViewService {
@@ -32,29 +32,29 @@ export class ViewService {
         return result; // ✅ No more error throwing
       }
 
-      public async getVisitedProperties(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
+      public async getVisitedCars(memberId: ObjectId, input: OrdinaryInquiry): Promise<Cars> {
         const { page, limit } = input;
-        const match: T = { viewGroup: ViewGroup.PROPERTY, memberId: memberId };
+        const match: T = { viewGroup: ViewGroup.CARS, memberId: memberId };
         const data: T = await this.viewModel
           .aggregate([
-            { $match: match },//Filter: faqat kerakli memberId va PROPERTY turidagi yozuvlar olinadi.
+            { $match: match },//Filter: faqat kerakli memberId va Car turidagi yozuvlar olinadi.
             { $sort: { updatedAt: -1 } },// sort by the last view from the top 
             {
               $lookup: {
-                from: 'properties',
+                from: 'cars',
                 localField: 'viewRefId',
                 foreignField: '_id',
-                as: 'visitedProperty',
+                as: 'visitedCar',
               },
             },
-            { $unwind: '$visitedProperty' },
+            { $unwind: '$visitedCar' },
             {
               $facet: { //Bu bosqichda ikkita paralel natija olinadi:
                 list: [
                   { $skip: (page - 1) * limit },
                   { $limit: limit },
-                  lookupVisit,//lookupVisit: bu ehtimol visitedProperty ichidagi boshqa bog‘liq ma’lumotlarni olish uchun ishlatiladi (masalan: agent, user, va h.k.).
-                  { $unwind: '$visitedProperty.memberData' },
+                  lookupVisit,//lookupVisit: bu ehtimol visitedCarichidagi boshqa bog‘liq ma’lumotlarni olish uchun ishlatiladi (masalan: agent, user, va h.k.).
+                  { $unwind: '$visitedCar.memberData' },
                 ],
                 metaCounter: [{ $count: 'total' }],
               },
@@ -62,8 +62,8 @@ export class ViewService {
           ])
           .exec();
         console.log('data: ', data);
-        const result: Properties = { list: [], metaCounter: data[0].metaCounter };
-        result.list = data[0].list.map((ele) => ele.visitedProperty);
+        const result: Cars = { list: [], metaCounter: data[0].metaCounter };
+        result.list = data[0].list.map((ele) => ele.visitedCar);
         console.log('result', result);
         return result;
       }
