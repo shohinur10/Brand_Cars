@@ -6,7 +6,8 @@ import {
   Length,
   IsBoolean,
   IsMongoId,
-  IsDateString
+  IsDateString,
+  Max
 } from 'class-validator';
 import { CarTransactionType, CarCategory, CarStatus, CarLocation } from '../../enums/car.enum';
 import { ObjectId } from 'mongoose';
@@ -37,6 +38,17 @@ export class CarUpdate{
   @Length(3, 100)
   @Field(() => String, { nullable: true })
   carAddress?: string;
+  
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  @Field(() => Int, { nullable: true })
+  discountPercent?: number;
+
+  @IsOptional()
+  @Field(() => Number, { nullable: true })
+  discountedPrice?: number
 
   @IsOptional()
   @Length(3, 100)

@@ -28,21 +28,25 @@ export class MemberService {
     private likeService:LikeService
 ) {}
 
-    public async signup(input:MemberInput): Promise<Member> {
-   //TODO:HASH PASSWORD
-   input.memberPassword = await this.authService.hashPassword(input.memberPassword);
-
-   try{
-   const result  = await this.memberModel.create(input);
-   //TODO: Authentication logic here
-    result.accessToken = await this.authService.createToken(result); // Assuming createToken is a method in AuthService that generates a token for the member
-return result; // Return the Member object directly
-    } catch (err){
-        console.error('Error, Service.model:', err.message);
-        throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE); // Handle the error appropriately
-
+public async signup(input: MemberInput): Promise<Member> {
+    input.memberPassword = await this.authService.hashPassword(input.memberPassword);
+  
+    // Add this bonus logic here, no other changes
+    const memberCount = await this.memberModel.countDocuments();
+    const hasBonus = (memberCount + 1) % 10 === 0;
+    try {
+      const result = await this.memberModel.create({
+        ...input,
+        hasBonus,  // add the bonus flag
+      });
+      result.accessToken = await this.authService.createToken(result);
+      return result;
+    } catch (err) {
+      console.error('Error, Service.model:', err.message);
+      throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE);
     }
-    }
+  }
+  
     public async login(input:LoginInput): Promise<Member> {
         const{ memberNick, memberPassword } = input;
         const response = await this.memberModel

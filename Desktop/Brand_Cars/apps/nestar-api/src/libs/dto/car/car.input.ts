@@ -109,6 +109,14 @@ export class CarInput {
   @IsDateString()
   @Field({ nullable: true })
   registeredAt?: string;
+
+
+  @Field(() => Number, { nullable: true })
+  discountPercent?: number;
+
+  @Field(() => Number, { nullable: true })
+  discountedPrice?: number;
+
 }
 
 @InputType()

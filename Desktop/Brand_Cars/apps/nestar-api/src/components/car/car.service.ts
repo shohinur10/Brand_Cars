@@ -30,8 +30,12 @@ private readonly likeService: LikeService
 
 ) {} // Inject the property model
     // This service is responsible for handling property-related operations.
+    
     public async createCar(input: CarInput): Promise<Car> {
       try {
+        // Calculate discounted price before creating the car
+        input.discountedPrice = this.calculateDiscountedPrice(input.carPrice, input.discountPercent);
+        
         const result = await this.carModel.create(input);
         await this.memberService.memberStatsEditor({ _id: result.memberId, targetKey: 'memberCar', modifier: 1 });
         return result;
@@ -40,7 +44,12 @@ private readonly likeService: LikeService
         throw new BadRequestException(Message.CREATE_FAILED);
       }
     }
-  
+    
+    private calculateDiscountedPrice(price: number, discountPercent?: number): number {
+      if (!discountPercent || discountPercent <= 0) return price;
+      return Math.round(price - (price * discountPercent) / 100);
+    }
+    
     
       public async getCar(memberId: ObjectId , carId: ObjectId): Promise<Car>{
         const search: T ={
@@ -86,23 +95,36 @@ private readonly likeService: LikeService
 
     public async updateCar(memberId: ObjectId, input: CarUpdate): Promise<Car> {
       let { carStatus, soldAt, deletedAt } = input;
+    
+      // 1. Calculate discounted price if price or discountPercent is changed or exists
+      if (input.discountPercent !== undefined || input.carPrice !== undefined) {
+        // Fetch current car data to get existing values if needed
+        const currentCar = await this.carModel.findById(input._id).select('carPrice discountPercent').lean();
+    
+        const price = input.carPrice ?? currentCar?.carPrice ?? 0;
+        const discountPercent = input.discountPercent ?? currentCar?.discountPercent ?? 0;
+    
+        // Calculate discounted price
+        input.discountedPrice = Math.round(price - (price * discountPercent) / 100);
+      }
+    
       const search: T = {
-        _id: input._id,// the property belong to our  agent and the change data
-        memberId: memberId,
-        propertyStatus: CarStatus.AVAILABLE, // Only allow updates for available cars
+        _id: input._id,        // The car to update
+        memberId: memberId,    // Belongs to the member updating it
+        propertyStatus: CarStatus.AVAILABLE, // Only allow updates if car is AVAILABLE
       };
-  
+    
       if (carStatus === CarStatus.SOLD) soldAt = moment().toDate();
       else if (carStatus === CarStatus.UNAVAILABLE) deletedAt = moment().toDate();
-  
+    
       const result = await this.carModel
         .findByIdAndUpdate(search, input, {
           new: true,
         })
         .exec();
-  
+    
       if (!result) throw new InternalServerErrorException(Message.UPDATED_FAILED);
-  
+    
       if (soldAt || deletedAt) {
         await this.memberService.memberStatsEditor({
           _id: memberId,
@@ -112,6 +134,7 @@ private readonly likeService: LikeService
       }
       return result;
     }
+    
 
     public async getCars(memberId: ObjectId, input: CarsInquiry): Promise<Cars> {
       const match: T = { carStatus: CarStatus.AVAILABLE };
@@ -349,13 +372,25 @@ public async getAllCarsByAdmin(input: AllCarsInquiry): Promise<Cars> {
 }
 public async updateCarByAdmin(input: CarUpdate): Promise<Car> {
   let { carStatus, soldAt, deletedAt } = input;
+
+  // Fetch current car info to fallback if needed
+  const currentCar = await this.carModel.findById(input._id).select('carPrice discountPercent').lean();
+
+  const price = input.carPrice ?? currentCar?.carPrice ?? 0;
+  const discountPercent = input.discountPercent ?? currentCar?.discountPercent ?? 0;
+
+  // Calculate discounted price if discountPercent or price is present
+  if (discountPercent > 0 || input.carPrice !== undefined) {
+    input.discountedPrice = Math.round(price - (price * discountPercent) / 100);
+  }
+
   const search: T = {
     _id: input._id,
-   carStatus: CarStatus.AVAILABLE, // Only allow updates for available cars
+    carStatus: CarStatus.AVAILABLE, // Only update available cars
   };
 
-  if (carStatus === CarStatus.SOLD) soldAt = moment().toDate();// this for sold status 
-  else if (carStatus === CarStatus.UNAVAILABLE) deletedAt = moment().toDate();// this is delete status 
+  if (carStatus === CarStatus.SOLD) soldAt = moment().toDate();
+  else if (carStatus === CarStatus.UNAVAILABLE) deletedAt = moment().toDate();
 
   const result = await this.carModel
     .findOneAndUpdate(search, input, {
@@ -365,9 +400,9 @@ public async updateCarByAdmin(input: CarUpdate): Promise<Car> {
 
   if (!result) throw new InternalServerErrorException(Message.UPDATED_FAILED);
 
-  if (soldAt || deletedAt) {// here we check agent properties total amn if sold or delete will appear ,we are gonna work -1 process and the can see agent properties -1 one total regime 
+  if (soldAt || deletedAt) {
     await this.memberService.memberStatsEditor({
-      _id: result.memberId,// dynamac qilib olyapmiz
+      _id: result.memberId,
       targetKey: 'memberCars',
       modifier: -1,
     });
@@ -375,6 +410,7 @@ public async updateCarByAdmin(input: CarUpdate): Promise<Car> {
 
   return result;
 }
+
 
 public async removeCarByAdmin(carId: ObjectId): Promise<Car> {
   const search: T = { _id: carId, carStatus: CarStatus.UNAVAILABLE };// this logic only when propertyStatus.delete otherwise no so we cant remove active or sold status 

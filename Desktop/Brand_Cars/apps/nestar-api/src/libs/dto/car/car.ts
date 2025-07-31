@@ -62,6 +62,12 @@ export class Car {
   @Field({ nullable: true })
   isForRent?: boolean;
 
+  @Field(() => Int, { nullable: true })
+  discountPercent?: number;
+
+  @Field(() => Number, { nullable: true })
+  discountedPrice?: number;
+
   @Field(() => ID)
   memberId: ObjectId;
 

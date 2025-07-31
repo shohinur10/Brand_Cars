@@ -28,6 +28,10 @@ export class MemberInput {
     @IsOptional()
     @Field(() => MemberAuthType, { nullable: true })
     MemberAuthType?: MemberAuthType;
+
+    @Field(() => Boolean)
+    hasBonus: boolean;
+
 }
 
 @InputType()
