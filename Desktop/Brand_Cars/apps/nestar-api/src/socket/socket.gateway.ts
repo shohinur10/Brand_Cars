@@ -69,9 +69,15 @@ export class SocketGateway implements OnGatewayInit {
     try {
       const parsedUrl = url.parse(req.url, true);
       const { token } = parsedUrl.query;
+      
+      if (!token) {
+        this.logger.verbose('WebSocket connection without token - connecting as guest');
+        return null;
+      }
+      
       return await this.authService.verifyToken(token as string);
     } catch (error) {
-      console.log(error);
+      this.logger.warn(`WebSocket JWT verification failed: ${error.message}`);
       return null;
     }
   }
