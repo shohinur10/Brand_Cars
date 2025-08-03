@@ -130,12 +130,20 @@ public async updateMemberByAdmin(@Args('input') input: MemberUpdate): Promise<Me
 @Mutation((returns) => String)
 public async imageUploader(
 	@Args({ name: 'file', type: () => GraphQLUpload })
-{ createReadStream, filename, mimetype }: FileUpload,
-@Args('target') target: String,
+	file: FileUpload,
+	@Args('target') target: String,
 ): Promise<string> {
 	console.log('Mutation: imageUploader');
+	console.log('Target directory:', target);
 
-	if (!filename) throw new Error(Message.UPLOAD_FAILED);
+	if (!file) {
+		throw new Error('No file provided in the request');
+	}
+
+	const { createReadStream, filename, mimetype } = await file;
+	console.log(`Processing file: ${filename}, type: ${mimetype}`);
+
+	if (!filename) throw new Error('Filename is missing');
 const validMime = validMimeTypes.includes(mimetype);
 if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
 
@@ -146,10 +154,16 @@ const stream = createReadStream();
 const result = await new Promise((resolve, reject) => {
 	stream
 		.pipe(createWriteStream(url))
-		.on('finish', async () => resolve(true))
-		.on('error', () => reject(false));
+		.on('finish', () => {
+			console.log(`✅ File saved successfully: ${url}`);
+			resolve(true);
+		})
+		.on('error', (error) => {
+			console.log(`❌ File write failed:`, error.message);
+			reject(new Error(`File write failed: ${error.message}`));
+		});
 });
-if (!result) throw new Error(Message.UPLOAD_FAILED);
+if (!result) throw new Error('File upload failed');
 
 return url;
 }
