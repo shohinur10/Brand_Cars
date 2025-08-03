@@ -13,10 +13,25 @@ import { CarTransactionType, CarCategory, CarStatus, CarLocation } from '../../e
 import { ObjectId } from 'mongoose';
 
 @InputType()
+export class CarUpdateTest {
+  @IsMongoId()
+  @Field(() => String) // Changed from ID to String to avoid type confusion
+  _id: string;
+
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  carTitle?: string;
+
+  @IsOptional()
+  @Field(() => Number, { nullable: true })
+  carPrice?: number;
+}
+
+@InputType()
 export class CarUpdate{
   @IsMongoId()
-  @Field(() => ID)
-  _id: ObjectId;
+  @Field(() => String)
+  _id: string; // Changed to string to match frontend input
 
   @IsOptional()
   @Field(() => CarTransactionType, { nullable: true })

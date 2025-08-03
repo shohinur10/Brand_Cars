@@ -19,8 +19,9 @@ import { SocketModule } from './socket/socket.module';
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       playground: true,
-      uploads: false, // defauld uploads ishga tushirma deyapmiz 
+      uploads: true, // Enable uploads for file handling
       autoSchemaFile: true,
+      csrfPrevention: false, // Disable CSRF protection for development
       formatError: (error: T) => { // formatting GraphQL errors globally
         const graphqlFormatError = {
           code: error?.extensions.code ,// GraphQL error code standard tarziga olib otyapmiz 

@@ -10,8 +10,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Car, Cars } from '../../libs/dto/car/car';
-import { AgentCarsInquiry, AllCarsInquiry, CarInput, CarsInquiry, OrdinaryInquiry } from '../../libs/dto/car/car.input';
-import { CarUpdate } from '../../libs/dto/car/car.update';
+import { CarInput, CarsInquiry, OrdinaryInquiry, AgentCarsInquiry, AllCarsInquiry } from '../../libs/dto/car/car.input';
+import { CarUpdate, CarUpdateTest } from '../../libs/dto/car/car.update';
 import { CarService } from './car.service';
 
 @Resolver()
@@ -47,7 +47,7 @@ public async getCar(
 @Roles(MemberType.AGENT)
 	@UseGuards(RolesGuard)
 	@Mutation((returns) => Car)
-	public async updateProperty(
+	public async updateCar(
 		@Args('input') input: CarUpdate,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Car> {
@@ -90,7 +90,7 @@ public async getCar(
         @Roles(MemberType.AGENT)
 	@UseGuards(RolesGuard)
 	@Query((returns) => Cars)
-	public async getAgentProperties(
+	public async getAgentCars(
 		@Args('input') input: AgentCarsInquiry,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Cars> {
@@ -124,13 +124,40 @@ public async getCar(
 		console.log('Query: getAllCarsByAdmin ');
 		return await this.carService.getAllCarsByAdmin(input);
 	}
-    @Roles(MemberType.ADMIN)
+    	@Roles(MemberType.ADMIN)
+	@UseGuards(RolesGuard)
+	@Mutation((returns) => String)
+	public async testUpdateCarSimple(@Args('input') input: CarUpdateTest): Promise<string> {
+		console.log('Test mutation with simple DTO received:', JSON.stringify(input, null, 2));
+		return `Test successful for carId: ${input._id}`;
+	}
+
+    	@Roles(MemberType.ADMIN)
+	@UseGuards(RolesGuard)
+	@Mutation((returns) => String)
+	public async testUpdateCarByAdmin(@Args('carId') carId: string): Promise<string> {
+		console.log('Test mutation received carId:', carId);
+		return `Test successful for carId: ${carId}`;
+	}
+
+    	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Mutation((returns) => Car)
 	public async updateCarByAdmin(@Args('input') input: CarUpdate): Promise<Car> {
 		console.log('Mutation: updateCarByAdmin!');
-		input._id = shapeIntoMongoObjectId(input._id);
-		return await this.carService.updateCarByAdmin(input);
+		console.log('Input received:', JSON.stringify(input, null, 2));
+		
+		try {
+			// Convert string _id to ObjectId for the service
+			const serviceInput = {
+				...input,
+				_id: shapeIntoMongoObjectId(input._id)
+			};
+			return await this.carService.updateCarByAdmin(serviceInput);
+		} catch (error) {
+			console.error('UpdateCarByAdmin Error:', error);
+			throw error;
+		}
 	}
 
 	@Roles(MemberType.ADMIN)

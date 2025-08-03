@@ -161,11 +161,18 @@ files: Promise<FileUpload>[],
 @Args('target') target: String,
 ): Promise<string[]> {
 	console.log('Mutation: imagesUploader');
+	console.log('Number of files received:', files.length);
+	console.log('Target directory:', target);
 
   const uploadedImages: string[] = [];
 	const promisedList = files.map(async (img: Promise<FileUpload>, index: number): Promise<Promise<void>> => {
 		try {
+			if (!img) {
+				console.log(`File at index ${index} is null or undefined`);
+				return;
+			}
 			const { filename, mimetype, encoding, createReadStream } = await img;
+			console.log(`Processing file ${index}: ${filename}, type: ${mimetype}`);
 
 			const validMime = validMimeTypes.includes(mimetype);
 			if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
@@ -177,19 +184,30 @@ files: Promise<FileUpload>[],
 			const result = await new Promise((resolve, reject) => {
 				stream
 					.pipe(createWriteStream(url))
-					.on('finish', () => resolve(true))
-					.on('error', () => reject(false));
+					.on('finish', () => {
+						console.log(`✅ File ${index} saved successfully: ${url}`);
+						resolve(true);
+					})
+					.on('error', (error) => {
+						console.log(`❌ File ${index} write failed:`, error.message);
+						reject(new Error(`File write failed: ${error.message}`));
+					});
 			});
 			if (!result) throw new Error(Message.UPLOAD_FAILED);
 
 			uploadedImages[index] = url;
 		} catch (err) {
-			console.log('Error, file missing!');
+			console.log('Error processing file at index', index, ':', err.message || err);
 		}
 	});
 
 	await Promise.all(promisedList);
-	return uploadedImages;
+	
+	// Filter out null/undefined values to return only successful uploads
+	const successfulUploads = uploadedImages.filter(url => url !== null && url !== undefined);
+	console.log(`📊 Upload Summary: ${successfulUploads.length} successful out of ${files.length} files`);
+	
+	return successfulUploads;
 }
 
   

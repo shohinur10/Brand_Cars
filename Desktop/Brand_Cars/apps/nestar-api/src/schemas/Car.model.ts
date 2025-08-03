@@ -8,7 +8,7 @@ const CarSchema = new Schema(
       enum: CarTransactionType,
       required: true,
     },
-    CarCategory: {
+    carCategory: {
       type: String,
       enum: CarCategory,
       required: true,
