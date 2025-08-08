@@ -13,25 +13,10 @@ import { CarTransactionType, CarCategory, CarStatus, CarLocation } from '../../e
 import { ObjectId } from 'mongoose';
 
 @InputType()
-export class CarUpdateTest {
-  @IsMongoId()
-  @Field(() => String) // Changed from ID to String to avoid type confusion
-  _id: string;
-
-  @IsOptional()
-  @Field(() => String, { nullable: true })
-  carTitle?: string;
-
-  @IsOptional()
-  @Field(() => Number, { nullable: true })
-  carPrice?: number;
-}
-
-@InputType()
-export class CarUpdate{
+export class CarUpdate {
   @IsMongoId()
   @Field(() => String)
-  _id: string; // Changed to string to match frontend input
+  _id: string; // required for identifying the car to update
 
   @IsOptional()
   @Field(() => CarTransactionType, { nullable: true })
@@ -53,17 +38,6 @@ export class CarUpdate{
   @Length(3, 100)
   @Field(() => String, { nullable: true })
   carAddress?: string;
-  
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  @Max(100)
-  @Field(() => Int, { nullable: true })
-  discountPercent?: number;
-
-  @IsOptional()
-  @Field(() => Number, { nullable: true })
-  discountedPrice?: number
 
   @IsOptional()
   @Length(3, 100)
@@ -146,4 +120,20 @@ export class CarUpdate{
   @IsDateString()
   @Field(() => Date, { nullable: true })
   registeredAt?: Date;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  @Field(() => Int, { nullable: true })
+  discountPercent?: number;
+
+  @IsOptional()
+  @Field(() => Number, { nullable: true })
+  discountedPrice?: number;
+
+  // ✅ Add this to support brand updates
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  brand?: string;
 }

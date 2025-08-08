@@ -87,6 +87,11 @@ export class CarInput {
   @Field({ nullable: true })
   isBarterAvailable?: boolean;
 
+  @IsNotEmpty()
+  @Field(() => String)
+  brand: string;
+
+
   @IsOptional()
   @IsBoolean()
   @Field({ nullable: true })

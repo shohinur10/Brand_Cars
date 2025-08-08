@@ -47,8 +47,9 @@ const MemberSchema = new Schema({
     memberDesc:{
         type:String,
     },
-    memberProperties:{
+    memberCars:{
         type: Number,
+        default: 0,
     },
     memberArticles:{
         type: Number,
@@ -85,6 +86,10 @@ const MemberSchema = new Schema({
     memberBlocks:{
         type: Number,
         default: 0,
+    },
+    hasBonus:{
+        type: Boolean,
+        default: false,
     },
 
 

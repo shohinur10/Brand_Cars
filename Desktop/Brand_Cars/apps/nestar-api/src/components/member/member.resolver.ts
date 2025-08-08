@@ -113,11 +113,7 @@ public async updateMemberByAdmin(@Args('input') input: MemberUpdate): Promise<Me
   try {
     console.log('Mutation: updateMemberByAdmin, input:', input);
 
-    const updateData = { ...input };
-    delete (updateData as Partial<MemberUpdate>)._id;
-
-    const memberId = shapeIntoMongoObjectId(input._id);
-    return await this.memberService.updateMember(memberId, updateData);
+    return await this.memberService.updateMemberByAdmin(input);
   } catch (error) {
     console.error('Update failed:', error);
     throw new BadRequestException(error.message || 'Bad Request Exception');

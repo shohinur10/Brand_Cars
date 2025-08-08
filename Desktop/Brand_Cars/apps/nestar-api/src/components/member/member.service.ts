@@ -55,10 +55,6 @@ public async signup(input: MemberInput): Promise<Member> {
         }).select('+memberPassword')
         .exec(); // Ensure password is included in the result
 
-        if (!response) {
-            throw new InternalServerErrorException(Message.NO_MEMBER_NICK);
-        }
-        
         if (!response || response.memberStatus === MemberStatus.DELETED) {
             throw new InternalServerErrorException(Message.NO_MEMBER_NICK);
         }else if (response.memberStatus === MemberStatus.BLOCK) {
@@ -235,15 +231,20 @@ return result[0];// [0] – bu yerda 0 indeksi orqali faqatgina birinchi element
         if (!_id || !Types.ObjectId.isValid(_id)) {
           throw new BadRequestException('Invalid ID format');
         }
+
+        // Hash password if provided
+        if (updateData.memberPassword) {
+          updateData.memberPassword = await this.authService.hashPassword(updateData.memberPassword);
+        }
       
         const result = await this.memberModel.findOneAndUpdate(
-          { _id },
+          { _id: new Types.ObjectId(_id) },
           updateData,
           { new: true }
         ).exec();
       
         if (!result) {
-          throw new NotFoundException(`No member found with ID: ${_id}`);
+          throw new InternalServerErrorException(Message.UPDATED_FAILED);
         }
       
         return result;

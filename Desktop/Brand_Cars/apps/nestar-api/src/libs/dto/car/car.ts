@@ -20,6 +20,10 @@ export class Car {
   @Field(() => CarLocation)
   carLocation: CarLocation;
 
+  @Field(() => String)
+   brand: string;
+
+
   @Field()
   carAddress: string;
 

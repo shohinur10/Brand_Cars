@@ -11,7 +11,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Car, Cars } from '../../libs/dto/car/car';
 import { CarInput, CarsInquiry, OrdinaryInquiry, AgentCarsInquiry, AllCarsInquiry } from '../../libs/dto/car/car.input';
-import { CarUpdate, CarUpdateTest } from '../../libs/dto/car/car.update';
+import { CarUpdate } from '../../libs/dto/car/car.update';
 import { CarService } from './car.service';
 
 @Resolver()
@@ -127,7 +127,7 @@ public async getCar(
     	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Mutation((returns) => String)
-	public async testUpdateCarSimple(@Args('input') input: CarUpdateTest): Promise<string> {
+	public async testUpdateCarSimple(@Args('input') input: CarUpdate): Promise<string> {
 		console.log('Test mutation with simple DTO received:', JSON.stringify(input, null, 2));
 		return `Test successful for carId: ${input._id}`;
 	}

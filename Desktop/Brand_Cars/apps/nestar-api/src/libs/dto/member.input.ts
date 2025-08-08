@@ -21,7 +21,7 @@ export class MemberInput {
     @Field(() => String)
     memberPhone: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @Field(() => MemberType, { nullable: true })
     memberType?: MemberType;
 
@@ -29,8 +29,9 @@ export class MemberInput {
     @Field(() => MemberAuthType, { nullable: true })
     MemberAuthType?: MemberAuthType;
 
-    @Field(() => Boolean)
-    hasBonus: boolean;
+    @IsOptional()
+    @Field(() => Boolean, { nullable: true })
+    hasBonus?: boolean;
 
 }
 

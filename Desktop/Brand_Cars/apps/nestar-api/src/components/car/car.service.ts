@@ -37,7 +37,7 @@ private readonly likeService: LikeService
         input.discountedPrice = this.calculateDiscountedPrice(input.carPrice, input.discountPercent);
         
         const result = await this.carModel.create(input);
-        await this.memberService.memberStatsEditor({ _id: result.memberId, targetKey: 'memberCar', modifier: 1 });
+        await this.memberService.memberStatsEditor({ _id: result.memberId, targetKey: 'memberCars', modifier: 1 });
         return result;
       } catch (err) {
         console.log('Error, Service.model:', err.message);
@@ -111,7 +111,7 @@ private readonly likeService: LikeService
       const search: T = {
         _id: input._id,        // The car to update
         memberId: memberId,    // Belongs to the member updating it
-        propertyStatus: CarStatus.AVAILABLE, // Only allow updates if car is AVAILABLE
+        carStatus: CarStatus.AVAILABLE, // Only allow updates if car is AVAILABLE
       };
     
       if (carStatus === CarStatus.SOLD) soldAt = moment().toDate();
@@ -314,7 +314,7 @@ private readonly likeService: LikeService
 
  // Like TAGGLE
  const modifier:number = await this.likeService.toggleLike(input);
- const result = await this.carStatsEditor({_id:likeRefId, targetKey:'propertyLikes', modifier:modifier});
+ const result = await this.carStatsEditor({_id:likeRefId, targetKey:'carLikes', modifier:modifier});
 
    if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
    return result;
