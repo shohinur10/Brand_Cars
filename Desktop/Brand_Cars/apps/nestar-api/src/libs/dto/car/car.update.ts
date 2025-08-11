@@ -9,7 +9,7 @@ import {
   IsDateString,
   Max
 } from 'class-validator';
-import { CarTransactionType, CarCategory, CarStatus, CarLocation } from '../../enums/car.enum';
+import { CarTransactionType, CarCategory, CarStatus, CarLocation, CarBrand } from '../../enums/car.enum';
 import { ObjectId } from 'mongoose';
 
 @InputType()
@@ -134,6 +134,6 @@ export class CarUpdate {
 
   // ✅ Add this to support brand updates
   @IsOptional()
-  @Field(() => String, { nullable: true })
-  brand?: string;
+  @Field(() => CarBrand, { nullable: true })
+  brand?: CarBrand;
 }

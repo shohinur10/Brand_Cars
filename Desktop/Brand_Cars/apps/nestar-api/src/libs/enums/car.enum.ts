@@ -18,7 +18,7 @@ export enum CarCategory{
   TRUCK = 'TRUCK',
 }
 registerEnumType(CarCategory, {
-  name: 'CarBodyType',
+  name: 'CarCategory',
 });
 
 export enum CarStatus {
@@ -65,4 +65,56 @@ export enum CarLocation {
   registerEnumType(CarLocation, {
 	name: 'CarLocation',
   });
+
+export enum CarCondition {
+  NEW = 'NEW',
+  USED = 'USED',
+  CERTIFIED_PRE_OWNED = 'CERTIFIED_PRE_OWNED',
+  EXCELLENT = 'EXCELLENT',
+  GOOD = 'GOOD',
+  FAIR = 'FAIR',
+}
+registerEnumType(CarCondition, {
+  name: 'CarCondition',
+});
+
+export enum CarColor {
+  WHITE = 'WHITE',
+  BLACK = 'BLACK',
+  SILVER = 'SILVER',
+  GRAY = 'GRAY',
+  RED = 'RED',
+  BLUE = 'BLUE',
+  GREEN = 'GREEN',
+  YELLOW = 'YELLOW',
+  BROWN = 'BROWN',
+  OTHER = 'OTHER',
+}
+registerEnumType(CarColor, {
+  name: 'CarColor',
+});
+
+export enum CarBrand {
+  TOYOTA = 'TOYOTA',
+  BMW = 'BMW',
+  MERCEDES = 'MERCEDES',
+  AUDI = 'AUDI',
+  VOLKSWAGEN = 'VOLKSWAGEN',
+  HONDA = 'HONDA',
+  NISSAN = 'NISSAN',
+  HYUNDAI = 'HYUNDAI',
+  KIA = 'KIA',
+  FORD = 'FORD',
+  CHEVROLET = 'CHEVROLET',
+  LEXUS = 'LEXUS',
+  PORSCHE = 'PORSCHE',
+  LAMBORGHINI = 'LAMBORGHINI',
+  FERRARI = 'FERRARI',
+  BENTLEY = 'BENTLEY',
+  ROLLS_ROYCE = 'ROLLS_ROYCE',
+  OTHER = 'OTHER',
+}
+registerEnumType(CarBrand, {
+  name: 'CarBrand',
+});
   

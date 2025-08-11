@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
-import { CarTransactionType, CarCategory, CarStatus, CarLocation } from '../../enums/car.enum';
+import { CarTransactionType, CarCategory, CarStatus, CarLocation, CarBrand } from '../../enums/car.enum';
 import { Member, TotalCounter } from '../member';
 import { ObjectId } from 'mongoose';
 
@@ -20,9 +20,8 @@ export class Car {
   @Field(() => CarLocation)
   carLocation: CarLocation;
 
-  @Field(() => String)
-   brand: string;
-
+  @Field(() => CarBrand)
+  brand: CarBrand;
 
   @Field()
   carAddress: string;

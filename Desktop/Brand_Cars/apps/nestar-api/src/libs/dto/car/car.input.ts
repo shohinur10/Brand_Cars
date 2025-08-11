@@ -2,7 +2,7 @@
 import { Field, InputType, Int, ID } from '@nestjs/graphql';
 
 import { IsNotEmpty, IsOptional, IsInt, Min, Length, IsBoolean, IsDateString, IsMongoId, IsIn, ArrayMinSize, IsArray } from 'class-validator';
-import { CarCategory, CarLocation, CarStatus, CarTransactionType } from '../../enums/car.enum';
+import { CarCategory, CarLocation, CarStatus, CarTransactionType, CarBrand } from '../../enums/car.enum';
 import { ObjectId } from 'mongoose';
 import { availableCarSorts, availableOptions, } from '../../config';
 import { Direction } from '../../enums/common.enum';
@@ -88,8 +88,8 @@ export class CarInput {
   isBarterAvailable?: boolean;
 
   @IsNotEmpty()
-  @Field(() => String)
-  brand: string;
+  @Field(() => CarBrand)
+  brand: CarBrand;
 
 
   @IsOptional()
