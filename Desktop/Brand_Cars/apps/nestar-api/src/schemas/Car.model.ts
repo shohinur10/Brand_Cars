@@ -62,6 +62,11 @@ const CarSchema = new Schema(
       required: true,
     },
 
+    carMileage: {
+      type: Number,
+      default: 0,
+    },
+
     carViews: {
       type: Number,
       default: 0,

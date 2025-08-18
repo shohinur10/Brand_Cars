@@ -51,7 +51,7 @@ export class LoginInput {
 
 @InputType()
 export class AISearch {
-    @IsNotEmpty()
+    @IsOptional()
     @Field(() => String, { nullable: true })
     text?: string;
 }

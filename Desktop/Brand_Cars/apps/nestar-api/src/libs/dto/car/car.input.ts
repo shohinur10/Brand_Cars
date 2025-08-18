@@ -58,6 +58,12 @@ export class CarInput {
   carDoors: number;
 
   @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Field(() => Int, { nullable: true })
+  carMileage?: number;
+
+  @IsOptional()
   @Field(() => Int, { nullable: true })
   carViews?: number;
 

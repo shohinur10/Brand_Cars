@@ -41,6 +41,9 @@ export class Car {
   @Field(() => Int)
   carDoors: number;
 
+  @Field(() => Int, { nullable: true })
+  carMileage?: number;
+
   @Field(() => Int)
   carViews: number;
 

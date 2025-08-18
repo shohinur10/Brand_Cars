@@ -50,21 +50,22 @@ registerEnumType(TransmissionType, {
 });
 
 export enum CarLocation {
-	LOS_ANGELES = 'Los Angeles',
-	PARIS = 'Paris',
-	BARCELONA = 'Barcelona',
-	TOKYO = 'Tokyo',
-	DUBAI = 'Dubai',
-	NEW_YORK = 'New York',
-	MUNICH = 'Munich',
-	SHANGHAI = 'Shanghai',
-	RIO_DE_JANEIRO = 'Rio de Janeiro',
-	SEOUL = 'Seoul',
-	LONDON = 'London',
-  }
-  registerEnumType(CarLocation, {
-	name: 'CarLocation',
-  });
+  LOS_ANGELES = 'LOS_ANGELES',
+  PARIS = 'PARIS',
+  BARCELONA = 'BARCELONA',
+  TOKYO = 'TOKYO',
+  DUBAI = 'DUBAI',
+  NEW_YORK = 'NEW_YORK',
+  MUNICH = 'MUNICH',
+  SHANGHAI = 'SHANGHAI',
+  RIO_DE_JANEIRO = 'RIO_DE_JANEIRO',
+  SEOUL = 'SEOUL',
+  LONDON = 'LONDON',
+  CAR = 'CAR'
+}
+registerEnumType(CarLocation, {
+  name: 'CarLocation',
+});
 
 export enum CarCondition {
   NEW = 'NEW',
