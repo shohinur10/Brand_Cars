@@ -16,14 +16,20 @@ export class AuthGuard implements CanActivate {
 			if (!bearerToken) throw new BadRequestException(Message.TOKEN_NOT_EXISTED);
                 
 				
-			const token = bearerToken.split(' ')[1],
-				authMember = await this.authService.verifyToken(token);
-			if (!authMember) throw new UnauthorizedException(Message.NOT_AUTHENTICATED);
-
-			console.log('memberNick[auth] =>', authMember.memberNick);
-			request.body.authMember = authMember;
-
-			return true;
+			const token = bearerToken.split(' ')[1];
+			try {
+				const authMember = await this.authService.verifyToken(token);
+				if (!authMember) throw new UnauthorizedException(Message.NOT_AUTHENTICATED);
+				
+				console.log('memberNick[auth] =>', authMember.memberNick);
+				request.body.authMember = authMember;
+				return true;
+			} catch (error) {
+				if (error.message.includes('expired')) {
+					throw new UnauthorizedException('Token expired. Please login again.');
+				}
+				throw new UnauthorizedException(Message.NOT_AUTHENTICATED);
+			}
 		}
 
 		// description => http, rpc, gprs and etc are ignored

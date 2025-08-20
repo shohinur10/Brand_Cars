@@ -28,8 +28,8 @@ export class AuthService {
 
     delete payload.memberPassword; // Remove password from the payload
 
-    // Add token expiration of 1 hour
-    return await this.jwtService.signAsync(payload, { expiresIn: '1h' });
+    // Use default expiration from AuthModule (30 days)
+    return await this.jwtService.signAsync(payload);
   }
 
   public async verifyToken(token: string): Promise<Member> {

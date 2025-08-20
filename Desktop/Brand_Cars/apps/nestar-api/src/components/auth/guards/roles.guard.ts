@@ -1,4 +1,4 @@
-import { BadRequestException, CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
+import { BadRequestException, CanActivate, ExecutionContext, Injectable, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthService } from '../auth.service';
 import { Message } from 'apps/nestar-api/src/libs/enums/common.enum';
@@ -21,16 +21,23 @@ export class RolesGuard implements CanActivate {
 			const bearerToken = request.headers.authorization;
 			if (!bearerToken) throw new BadRequestException(Message.TOKEN_NOT_EXISTED);
 
-			const token = bearerToken.split(' ')[1],
-				authMember = await this.authService.verifyToken(token),
-				hasRole = () => !!authMember && roles.indexOf(authMember.memberType) > -1,
-				hasPermission: boolean = hasRole();
+			const token = bearerToken.split(' ')[1];
+			try {
+				const authMember = await this.authService.verifyToken(token);
+				const hasRole = () => !!authMember && roles.indexOf(authMember.memberType) > -1;
+				const hasPermission: boolean = hasRole();
 
-			if (!authMember || !hasPermission) throw new ForbiddenException(Message.ONLY_SPECIFIC_ROLES_ALLOWED);
-
-			console.log('memberNick[roles] =>', authMember.memberNick);
-			request.body.authMember = authMember;
-			return true;
+				if (!authMember || !hasPermission) throw new ForbiddenException(Message.ONLY_SPECIFIC_ROLES_ALLOWED);
+				
+				console.log('memberNick[roles] =>', authMember.memberNick);
+				request.body.authMember = authMember;
+				return true;
+			} catch (error) {
+				if (error.message.includes('expired')) {
+					throw new UnauthorizedException('Token expired. Please login again.');
+				}
+				throw new ForbiddenException(Message.ONLY_SPECIFIC_ROLES_ALLOWED);
+			}
 		}
 
 		// description => http, rpc, gprs and etc are ignored
