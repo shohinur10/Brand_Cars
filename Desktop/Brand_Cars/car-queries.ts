@@ -147,7 +147,7 @@ export const GET_CARS = gql`
                     myFollowing
                 }
             }
-            # ✅ UNCOMMENTED - These fields ARE supported by your backend:
+            # ✅ These fields are required by the backend schema
             fuelType
             transmissionType
             carCondition

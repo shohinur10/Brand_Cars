@@ -28,7 +28,10 @@ export class BoardArticleService {
 		input.memberId = memberId;
 
 		try {
+			console.log('Creating board article with input:', JSON.stringify(input, null, 2));
 			const result = await this.boardArticleModel.create(input);
+			console.log('Board article created successfully:', JSON.stringify(result, null, 2));
+			
 			await this.memberService.memberStatsEditor({
 				_id: memberId,
 				targetKey: 'memberArticles',
@@ -36,7 +39,7 @@ export class BoardArticleService {
 			});
 			return result;
 		} catch (err) {
-			console.log('Error: Service.model');
+			console.log('Error creating board article:', err);
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}
 	}
@@ -127,7 +130,16 @@ export class BoardArticleService {
 				},
 			])
 			.exec();
-		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		
+		console.log('Aggregation result:', JSON.stringify(result, null, 2));
+		
+		if (!result || !result.length) {
+			// Return empty result instead of throwing error
+			return {
+				list: [],
+				metaCounter: [{ total: 0 }]
+			};
+		}
 
 		return result[0];
 	}
@@ -194,7 +206,13 @@ export class BoardArticleService {
 			])
 			.exec();
 
-		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		if (!result || !result.length) {
+			// Return empty result instead of throwing error
+			return {
+				list: [],
+				metaCounter: [{ total: 0 }]
+			};
+		}
 
 		return result[0];
 	}

@@ -33,14 +33,18 @@ private readonly likeService: LikeService
     
     public async createCar(input: CarInput): Promise<Car> {
       try {
+        console.log('🚗 Creating car with input:', JSON.stringify(input, null, 2));
+        
         // Calculate discounted price before creating the car
         input.discountedPrice = this.calculateDiscountedPrice(input.carPrice, input.discountPercent);
         
         const result = await this.carModel.create(input);
+        console.log('✅ Car created successfully:', JSON.stringify(result, null, 2));
+        
         await this.memberService.memberStatsEditor({ _id: result.memberId, targetKey: 'memberCars', modifier: 1 });
         return result;
       } catch (err) {
-        console.log('Error, Service.model:', err.message);
+        console.log('❌ Error creating car:', err.message);
         throw new BadRequestException(Message.CREATE_FAILED);
       }
     }
@@ -154,6 +158,10 @@ private readonly likeService: LikeService
       console.log('📈 Total cars in DB:', totalCars);
       console.log('✅ Available cars in DB:', availableCars);
     
+      // 🔍 Let's see what cars actually exist to debug the filtering
+      const sampleCars = await this.carModel.find({ carStatus: CarStatus.AVAILABLE }).limit(3).lean().exec();
+      console.log('🔍 Sample available cars in DB:', JSON.stringify(sampleCars, null, 2));
+    
       const result = await this.carModel
         .aggregate([
           { $match: match },
@@ -175,7 +183,13 @@ private readonly likeService: LikeService
     
       console.log('🎯 Aggregation result:', JSON.stringify(result, null, 2));
     
-      if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+      if (!result || !result.length) {
+        // Return empty result instead of throwing error
+        return {
+          list: [],
+          metaCounter: [{ total: 0 }]
+        };
+      }
     
       return result[0];
     }
@@ -196,61 +210,75 @@ private readonly likeService: LikeService
         options,
         searchText,
       } = input.search;
-    
+
+      console.log('🔍 Input search parameters:', JSON.stringify(input.search, null, 2));
+
       if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
     
       if (locationList?.length) {
         match.carLocation = { $in: locationList };
+        console.log('📍 Added location filter:', match.carLocation);
       }
     
       if (typeList?.length) {
         match.carTransactionType = { $in: typeList };
+        console.log('🚗 Added transaction type filter:', match.carTransactionType);
       }
     
       if (carCategoryList?.length) {
         match.carCategory = { $in: carCategoryList };
+        console.log('🏷️ Added category filter:', match.carCategory);
       }
     
-      // Handle array-based year range
-      if (yearRange?.length === 2) {
-        const [startYear, endYear] = yearRange;
-        match.carYear = {
-          ...(startYear !== undefined && { $gte: startYear }),
-          ...(endYear !== undefined && { $lte: endYear }),
-        };
-      }
+      // 🔧 TEMPORARILY COMMENTED OUT TO TEST BASIC FUNCTIONALITY
+      // // Handle array-based year range
+      // if (yearRange?.length === 2) {
+      //   const [startYear, endYear] = yearRange;
+      //   match.carYear = {
+      //     ...(startYear !== undefined && { $gte: startYear }),
+      //     ...(endYear !== undefined && { $lte: endYear }),
+      //   };
+      //   console.log('📅 Added year filter:', match.carYear);
+      // }
     
-      if (pricesRange) {
-        match.carPrice = {
-          ...(pricesRange.start !== undefined && { $gte: pricesRange.start }),
-          ...(pricesRange.end !== undefined && { $lte: pricesRange.end }),
-        };
-      }
+      // if (pricesRange) {
+      //   match.carPrice = {
+      //     ...(pricesRange.start !== undefined && { $gte: pricesRange.start }),
+      //     ...(pricesRange.end !== undefined && { $lte: pricesRange.end }),
+      //   };
+      //   console.log('💰 Added price filter:', match.carPrice);
+      // }
     
-      if (periodsRange) {
-        match.createdAt = {
-          ...(periodsRange.start !== undefined && { $gte: periodsRange.start }),
-          ...(periodsRange.end !== undefined && { $lte: periodsRange.end }),
-        };
-      }
+      // if (periodsRange) {
+      //   match.createdAt = {
+      //     ...(periodsRange.start !== undefined && { $gte: periodsRange.start }),
+      //     ...(periodsRange.end !== undefined && { $lte: periodsRange.end }),
+      //   };
+      //   console.log('📆 Added period filter:', match.createdAt);
+      // }
     
       if (fuelTypes?.length) {
         match.fuelType = { $in: fuelTypes };
+        console.log('⛽ Added fuel type filter:', match.fuelType);
       }
     
       if (brands?.length) {
         match.brand = { $in: brands };
+        console.log('🏭 Added brand filter:', match.brand);
       }
     
-      if (minMileage !== undefined || maxMileage !== undefined) {
-        match.mileage = {};
-        if (minMileage !== undefined) match.mileage.$gte = minMileage;
-        if (maxMileage !== undefined) match.mileage.$lte = maxMileage;
-        if (Object.keys(match.mileage).length === 0) delete match.mileage;
-      }
+      // 🔧 TEMPORARILY COMMENTED OUT TO TEST BASIC FUNCTIONALITY
+      // if (minMileage !== undefined || maxMileage !== undefined) {
+      //   match.mileage = {};
+      //   if (minMileage !== undefined) match.mileage.$gte = minMileage;
+      //   if (maxMileage !== undefined) match.mileage.$lte = maxMileage;
+      //   if (Object.keys(match.mileage).length === 0) delete match.mileage;
+      //   console.log('🛣️ Added mileage filter:', match.mileage);
+      // }
     
       if (options?.length) {
         match.$or = options.map((option) => ({ [option]: true }));
+        console.log('⚙️ Added options filter:', match.$or);
       }
     
       if (searchText) {
@@ -260,7 +288,10 @@ private readonly likeService: LikeService
           { model: { $regex: new RegExp(searchText, 'i') } },
           { carDesc: { $regex: new RegExp(searchText, 'i') } },
         );
+        console.log('🔍 Added search text filter:', match.$or);
       }
+
+      console.log('🔍 Final match query after shaping:', JSON.stringify(match, null, 2));
     }
     
 
@@ -303,10 +334,16 @@ private readonly likeService: LikeService
       ])
       .exec();
   
-    if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+    if (!result || !result.length) {
+      // Return empty result instead of throwing error
+      return {
+        list: [],
+        metaCounter: [{ total: 0 }]
+      };
+    }
   
     return result[0];
-    }
+  }
 
     public async likeTargetCar(memberId:ObjectId, likeRefId:ObjectId):Promise<Car>{
       const target = await this.carModel.findOne({_id: likeRefId, carStatus: CarStatus.AVAILABLE}).exec();
@@ -349,7 +386,7 @@ public async getAllCarsByAdmin(input: AllCarsInquiry): Promise<Cars> {
     ? input.sort!
     : 'createdAt';
 
-  const sortDirection = input.direction === Direction.ASC ? 1 : -1;
+  const sortDirection = input.direction === Direction.DESC ? 1 : -1;
 
   const sort: T = {
     [sortField]: sortDirection,
@@ -376,7 +413,13 @@ public async getAllCarsByAdmin(input: AllCarsInquiry): Promise<Cars> {
     ])
     .exec();
 
-  if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+  if (!result || !result.length) {
+    // Return empty result instead of throwing error
+    return {
+      list: [],
+      metaCounter: [{ total: 0 }]
+    };
+  }
 
   return result[0];
 }
