@@ -84,7 +84,7 @@ public async getCar(
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Cars> {
 		console.log('Query: getVisited');
-		return await this.carService.getFavorites(memberId, input);
+		return await this.carService.getVisited(memberId, input);
 	}
 	
         @Roles(MemberType.AGENT)

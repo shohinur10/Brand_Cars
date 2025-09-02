@@ -2,7 +2,7 @@
 import { Field, InputType, Int, ID } from '@nestjs/graphql';
 
 import { IsNotEmpty, IsOptional, IsInt, Min, Length, IsBoolean, IsDateString, IsMongoId, IsIn, ArrayMinSize, IsArray } from 'class-validator';
-import { CarCategory, CarLocation, CarStatus, CarTransactionType, CarBrand } from '../../enums/car.enum';
+import { CarCategory, CarLocation, CarStatus, CarTransactionType, CarBrand, FuelType, TransmissionType, CarCondition, CarColor } from '../../enums/car.enum';
 import { ObjectId } from 'mongoose';
 import { availableCarSorts, availableOptions, } from '../../config';
 import { Direction } from '../../enums/common.enum';
@@ -97,6 +97,26 @@ export class CarInput {
   @Field(() => CarBrand)
   brand: CarBrand;
 
+  @IsNotEmpty()
+  @Field(() => FuelType)
+  fuelType: FuelType;
+
+  @IsNotEmpty()
+  @Field(() => TransmissionType)
+  transmissionType: TransmissionType;
+
+  @IsNotEmpty()
+  @Field(() => CarCondition)
+  carCondition: CarCondition;
+
+  @IsNotEmpty()
+  @Field(() => CarColor)
+  carColor: CarColor;
+
+  @IsNotEmpty()
+  @Length(1, 100)
+  @Field()
+  model: string;
 
   @IsOptional()
   @IsBoolean()

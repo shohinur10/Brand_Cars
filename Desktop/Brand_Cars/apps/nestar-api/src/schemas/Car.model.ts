@@ -26,6 +26,35 @@ const CarSchema = new Schema(
       default: CarStatus.AVAILABLE,
     },
 
+    fuelType: {
+      type: String,
+      enum: FuelType,
+      required: true,
+    },
+
+    transmissionType: {
+      type: String,
+      enum: TransmissionType,
+      required: true,
+    },
+
+    carCondition: {
+      type: String,
+      enum: CarCondition,
+      required: true,
+    },
+
+    carColor: {
+      type: String,
+      enum: CarColor,
+      required: true,
+    },
+
+    model: {
+      type: String,
+      required: true,
+    },
+
     carLocation: {
       type: String,
       enum: CarLocation,
@@ -63,6 +92,11 @@ const CarSchema = new Schema(
     },
 
     carMileage: {
+      type: Number,
+      default: 0,
+    },
+
+    mileage: {
       type: Number,
       default: 0,
     },
@@ -128,8 +162,8 @@ const CarSchema = new Schema(
 );
 
 CarSchema.index(
-  { CarCategory: 1, carLocation: 1, carTitle: 1, carPrice: 1 },
-  { unique: true },
+  { carCategory: 1, carLocation: 1, carTitle: 1, carPrice: 1 },
+  { unique: false },
 );
 
 export default CarSchema;

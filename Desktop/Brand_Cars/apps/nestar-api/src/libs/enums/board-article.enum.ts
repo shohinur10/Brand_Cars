@@ -7,6 +7,9 @@ export enum BoardArticleCategory {
 	HUMOR = 'HUMOR',
 	REVIEWS = 'REVIEWS',
 	QNA = 'QNA',
+	QA = 'QA', // Added for backward compatibility
+	VIDEOS = 'VIDEOS', // Added for video content
+	TECH = 'TECH', // Added for technology content
 	EVENTS = 'EVENTS',
 	CAR_NEWS = 'CAR_NEWS',
 	SHOWCASE = 'SHOWCASE',

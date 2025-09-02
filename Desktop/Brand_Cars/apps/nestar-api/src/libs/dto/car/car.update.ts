@@ -9,7 +9,7 @@ import {
   IsDateString,
   Max
 } from 'class-validator';
-import { CarTransactionType, CarCategory, CarStatus, CarLocation, CarBrand } from '../../enums/car.enum';
+import { CarTransactionType, CarCategory, CarStatus, CarLocation, CarBrand, FuelType, TransmissionType, CarCondition, CarColor } from '../../enums/car.enum';
 import { ObjectId } from 'mongoose';
 
 @InputType()
@@ -136,4 +136,37 @@ export class CarUpdate {
   @IsOptional()
   @Field(() => CarBrand, { nullable: true })
   brand?: CarBrand;
+
+  @IsOptional()
+  @Field(() => FuelType, { nullable: true })
+  fuelType?: FuelType;
+
+  @IsOptional()
+  @Field(() => TransmissionType, { nullable: true })
+  transmissionType?: TransmissionType;
+
+  @IsOptional()
+  @Field(() => CarCondition, { nullable: true })
+  carCondition?: CarCondition;
+
+  @IsOptional()
+  @Field(() => CarColor, { nullable: true })
+  carColor?: CarColor;
+
+  @IsOptional()
+  @Length(1, 100)
+  @Field({ nullable: true })
+  model?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Field(() => Int, { nullable: true })
+  carMileage?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Field(() => Int, { nullable: true })
+  mileage?: number;
 }

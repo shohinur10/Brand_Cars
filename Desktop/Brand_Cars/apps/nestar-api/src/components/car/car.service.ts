@@ -28,8 +28,8 @@ private memberService: MemberService,
 private readonly viewService: ViewService,
 private readonly likeService: LikeService
 
-) {} // Inject the property model
-    // This service is responsible for handling property-related operations.
+) {} // Inject the car model and services
+    // This service is responsible for handling car-related operations.
     
     public async createCar(input: CarInput): Promise<Car> {
       try {
@@ -144,7 +144,15 @@ private readonly likeService: LikeService
       const sort: T = { [sortField]: sortDirection };
     
       this.shapeMatchQuery(match, input);
-      console.log('match:', match);
+      console.log('🔍 Final match query:', match);
+      console.log('📊 Sort:', sort);
+      console.log('👤 MemberId:', memberId);
+    
+      // ✅ First, let's check if we have any cars at all
+      const totalCars = await this.carModel.countDocuments().exec();
+      const availableCars = await this.carModel.countDocuments({ carStatus: CarStatus.AVAILABLE }).exec();
+      console.log('📈 Total cars in DB:', totalCars);
+      console.log('✅ Available cars in DB:', availableCars);
     
       const result = await this.carModel
         .aggregate([
@@ -164,6 +172,8 @@ private readonly likeService: LikeService
           },
         ])
         .exec();
+    
+      console.log('🎯 Aggregation result:', JSON.stringify(result, null, 2));
     
       if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
     
@@ -413,7 +423,7 @@ public async updateCarByAdmin(input: CarUpdate): Promise<Car> {
 
 
 public async removeCarByAdmin(carId: ObjectId): Promise<Car> {
-  const search: T = { _id: carId, carStatus: CarStatus.UNAVAILABLE };// this logic only when propertyStatus.delete otherwise no so we cant remove active or sold status 
+  const search: T = { _id: carId, carStatus: CarStatus.UNAVAILABLE };// only remove cars with UNAVAILABLE status 
   const result = await this.carModel.findOneAndDelete(search).exec();
   if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
 

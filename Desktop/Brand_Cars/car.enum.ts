@@ -1,25 +1,18 @@
-import { registerEnumType } from '@nestjs/graphql';
-
 export enum CarTransactionType {
   RENT = 'RENT',
   LOAN = 'LOAN',
   BUY = 'BUY',
 }
-registerEnumType(CarTransactionType, {
-  name: 'CarTransactionType',
-});
 
-export enum CarCategory{
+export enum CarCategory {
   SEDAN = 'SEDAN',
   SUV = 'SUV',
   COUPE = 'COUPE',
   LUXURY = 'LUXURY',
   HATCHBACK = 'HATCHBACK',
   TRUCK = 'TRUCK',
+  // ❌ REMOVED: CAR = "CAR" - This doesn't exist in your backend
 }
-registerEnumType(CarCategory, {
-  name: 'CarCategory',
-});
 
 export enum CarStatus {
   AVAILABLE = 'AVAILABLE',
@@ -27,9 +20,15 @@ export enum CarStatus {
   SOLD = 'SOLD',
   UNAVAILABLE = 'UNAVAILABLE',
 }
-registerEnumType(CarStatus, {
-  name: 'CarStatus',
-});
+
+export enum CarCondition {
+  NEW = 'NEW',
+  USED = 'USED',
+  CERTIFIED_PRE_OWNED = 'CERTIFIED_PRE_OWNED',
+  EXCELLENT = 'EXCELLENT',
+  GOOD = 'GOOD',
+  FAIR = 'FAIR',
+}
 
 export enum FuelType {
   GASOLINE = 'GASOLINE',
@@ -37,17 +36,11 @@ export enum FuelType {
   ELECTRIC = 'ELECTRIC',
   HYBRID = 'HYBRID',
 }
-registerEnumType(FuelType, {
-  name: 'FuelType',
-});
 
 export enum TransmissionType {
   AUTOMATIC = 'AUTOMATIC',
   MANUAL = 'MANUAL',
 }
-registerEnumType(TransmissionType, {
-  name: 'TransmissionType',
-});
 
 export enum CarLocation {
   LOS_ANGELES = 'LOS_ANGELES',
@@ -60,23 +53,9 @@ export enum CarLocation {
   SHANGHAI = 'SHANGHAI',
   RIO_DE_JANEIRO = 'RIO_DE_JANEIRO',
   SEOUL = 'SEOUL',
-  LONDON = 'LONDON'
+  LONDON = 'LONDON',
+  // ❌ REMOVED: CAR = "CAR" - This doesn't exist in your backend
 }
-registerEnumType(CarLocation, {
-  name: 'CarLocation',
-});
-
-export enum CarCondition {
-  NEW = 'NEW',
-  USED = 'USED',
-  CERTIFIED_PRE_OWNED = 'CERTIFIED_PRE_OWNED',
-  EXCELLENT = 'EXCELLENT',
-  GOOD = 'GOOD',
-  FAIR = 'FAIR',
-}
-registerEnumType(CarCondition, {
-  name: 'CarCondition',
-});
 
 export enum CarColor {
   WHITE = 'WHITE',
@@ -90,9 +69,6 @@ export enum CarColor {
   BROWN = 'BROWN',
   OTHER = 'OTHER',
 }
-registerEnumType(CarColor, {
-  name: 'CarColor',
-});
 
 export enum CarBrand {
   TOYOTA = 'TOYOTA',
@@ -114,7 +90,5 @@ export enum CarBrand {
   ROLLS_ROYCE = 'ROLLS_ROYCE',
   OTHER = 'OTHER',
 }
-registerEnumType(CarBrand, {
-  name: 'CarBrand',
-});
-  
+
+

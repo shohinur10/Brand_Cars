@@ -1,6 +1,6 @@
 import{ObjectId} from 'bson';//Ko‘p hollarda string ko‘rinishidagi id larni ObjectId ga aylantirish kerak bo‘ladi (aksi holda Mongo query ishlamaydi).
 
-export const availableAgentSorts =["createdAt", "updatedAt", "memberLikes", "memberViews","memberRanking"] ;
+export const availableAgentSorts =["createdAt", "updatedAt", "memberLikes", "memberViews","memberRank"] ;
 export const availableMemberSorts =["createdAt", "updatedAt", "memberLikes", "memberViews"];
 
 export const availableOptions =['CarLoan','CarRent','CarInsurance','CarExchange','CarDelivery','CarMaintenance','CarAccessories','CarParts','CarServices'];

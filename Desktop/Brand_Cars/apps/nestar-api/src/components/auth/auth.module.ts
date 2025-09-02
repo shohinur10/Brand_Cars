@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { AuthGuard } from './guards/auth.guard';
 import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
 
@@ -7,11 +8,11 @@ import { JwtModule } from '@nestjs/jwt';
   imports: [
     HttpModule,
     JwtModule.register({
-      secret: `${process.env.SECRET_KEY}`,
+      secret: process.env.SECRET_KEY || 'temporary-secret-key-for-development-only-change-in-production',
       signOptions: { expiresIn: '30d' }, // Token expiration time
     })
-  ], // No imports needed for AuthModule
-  providers: [AuthService],
-  exports: [AuthService], // Exporting AuthService to make it available in other modules
+  ],
+  providers: [AuthService, AuthGuard],
+  exports: [AuthService, AuthGuard], // Exporting both AuthService and AuthGuard
 })
 export class AuthModule {}
