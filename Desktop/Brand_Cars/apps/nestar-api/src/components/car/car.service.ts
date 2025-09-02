@@ -44,7 +44,15 @@ private readonly likeService: LikeService
         await this.memberService.memberStatsEditor({ _id: result.memberId, targetKey: 'memberCars', modifier: 1 });
         return result;
       } catch (err) {
-        console.log('❌ Error creating car:', err.message);
+        console.log('❌ Error creating car - Full error:', err);
+        console.log('❌ Error creating car - Message:', err.message);
+        console.log('❌ Error creating car - Stack:', err.stack);
+        
+        // Check if it's a validation error
+        if (err.name === 'ValidationError') {
+          console.log('❌ Validation errors:', err.errors);
+        }
+        
         throw new BadRequestException(Message.CREATE_FAILED);
       }
     }

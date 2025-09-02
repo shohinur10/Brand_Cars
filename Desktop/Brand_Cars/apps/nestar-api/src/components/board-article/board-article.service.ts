@@ -104,12 +104,26 @@ export class BoardArticleService {
 		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.ASC ? 1 : -1,// ✅ convert ASC/DESC to 1/-1
 		};
 
+		console.log('📰 Board article search input:', JSON.stringify(input.search, null, 2));
+		console.log('📰 Board article match before filters:', match);
+
 		if (articleCategory) match.articleCategory = articleCategory;
 		if (text) match.articleTitle = { $regex: new RegExp(text, 'i') };
 		if (input.search?.memberId) {
 			match.memberId = shapeIntoMongoObjectId(input.search.memberId);
 		}
-		console.log('match', match);
+		console.log('📰 Board article final match:', match);
+		console.log('📰 Board article sort:', sort);
+
+		// 🔍 Let's see what articles actually exist to debug
+		const totalArticles = await this.boardArticleModel.countDocuments().exec();
+		const activeArticles = await this.boardArticleModel.countDocuments({ articleStatus: BoardArticleStatus.ACTIVE }).exec();
+		console.log('📰 Total articles in DB:', totalArticles);
+		console.log('✅ Active articles in DB:', activeArticles);
+
+		// 🔍 Let's see what articles actually exist to debug
+		const sampleArticles = await this.boardArticleModel.find({ articleStatus: BoardArticleStatus.ACTIVE }).limit(3).lean().exec();
+		console.log('📰 Sample active articles in DB:', JSON.stringify(sampleArticles, null, 2));
 
 		const result = await this.boardArticleModel
 			.aggregate([
@@ -131,7 +145,7 @@ export class BoardArticleService {
 			])
 			.exec();
 		
-		console.log('Aggregation result:', JSON.stringify(result, null, 2));
+		console.log('📰 Board article aggregation result:', JSON.stringify(result, null, 2));
 		
 		if (!result || !result.length) {
 			// Return empty result instead of throwing error

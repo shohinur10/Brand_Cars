@@ -97,26 +97,26 @@ export class CarInput {
   @Field(() => CarBrand)
   brand: CarBrand;
 
-  @IsNotEmpty()
-  @Field(() => FuelType)
-  fuelType: FuelType;
+  @IsOptional()
+  @Field(() => FuelType, { nullable: true })
+  fuelType?: FuelType;
 
-  @IsNotEmpty()
-  @Field(() => TransmissionType)
-  transmissionType: TransmissionType;
+  @IsOptional()
+  @Field(() => TransmissionType, { nullable: true })
+  transmissionType?: TransmissionType;
 
-  @IsNotEmpty()
-  @Field(() => CarCondition)
-  carCondition: CarCondition;
+  @IsOptional()
+  @Field(() => CarCondition, { nullable: true })
+  carCondition?: CarCondition;
 
-  @IsNotEmpty()
-  @Field(() => CarColor)
-  carColor: CarColor;
+  @IsOptional()
+  @Field(() => CarColor, { nullable: true })
+  carColor?: CarColor;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Length(1, 100)
-  @Field()
-  model: string;
+  @Field({ nullable: true })
+  model?: string;
 
   @IsOptional()
   @IsBoolean()

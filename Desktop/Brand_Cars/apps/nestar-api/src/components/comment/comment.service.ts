@@ -86,6 +86,9 @@ export class CommentService {
             [input?.sort ?? 'createdAt']: input?.direction === Direction.ASC ? 1 : -1,
           };// dynamic holatda yasayapmiz key va value
           
+		console.log('🔍 Comment search input:', JSON.stringify(input.search, null, 2));
+		console.log('🔍 Comment match query:', match);
+		console.log('📊 Comment sort:', sort);
 
 		const result = await this.commentModel
 			.aggregate([
@@ -105,7 +108,16 @@ export class CommentService {
 				},
 			])
 			.exec();
-		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		
+		console.log('💬 Comment aggregation result:', JSON.stringify(result, null, 2));
+		
+		if (!result || !result.length) {
+			// Return empty result instead of throwing error
+			return {
+				list: [],
+				metaCounter: [{ total: 0 }]
+			};
+		}
 
 		return result[0];
 	}

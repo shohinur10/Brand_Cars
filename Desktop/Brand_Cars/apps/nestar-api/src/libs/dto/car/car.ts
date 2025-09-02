@@ -24,20 +24,20 @@ export class Car {
   @Field(() => CarBrand)
   brand: CarBrand;
 
-  @Field(() => FuelType)
-  fuelType: FuelType;
+  @Field(() => FuelType, { nullable: true })
+  fuelType?: FuelType;
 
-  @Field(() => TransmissionType)
-  transmissionType: TransmissionType;
+  @Field(() => TransmissionType, { nullable: true })
+  transmissionType?: TransmissionType;
 
-  @Field(() => CarCondition)
-  carCondition: CarCondition;
+  @Field(() => CarCondition, { nullable: true })
+  carCondition?: CarCondition;
 
-  @Field(() => CarColor)
-  carColor: CarColor;
+  @Field(() => CarColor, { nullable: true })
+  carColor?: CarColor;
 
-  @Field()
-  model: string;
+  @Field({ nullable: true })
+  model?: string;
 
   @Field()
   carAddress: string;

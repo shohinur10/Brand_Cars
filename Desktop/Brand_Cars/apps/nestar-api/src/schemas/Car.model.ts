@@ -29,30 +29,30 @@ const CarSchema = new Schema(
     fuelType: {
       type: String,
       enum: FuelType,
-      required: true,
+      required: false,
     },
 
     transmissionType: {
       type: String,
       enum: TransmissionType,
-      required: true,
+      required: false,
     },
 
     carCondition: {
       type: String,
       enum: CarCondition,
-      required: true,
+      required: false,
     },
 
     carColor: {
       type: String,
       enum: CarColor,
-      required: true,
+      required: false,
     },
 
     model: {
       type: String,
-      required: true,
+      required: false,
     },
 
     carLocation: {
