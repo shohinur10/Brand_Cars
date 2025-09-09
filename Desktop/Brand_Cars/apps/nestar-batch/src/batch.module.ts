@@ -7,6 +7,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { MongooseModule } from '@nestjs/mongoose';
 import MemberSchema from 'apps/nestar-api/src/schemas/Member.model';
 import CarSchema from 'apps/nestar-api/src/schemas/Car.model';
+import FollowSchema from 'apps/nestar-api/src/schemas/Follow.model';
 
 @Module({
 	imports: [
@@ -15,6 +16,7 @@ import CarSchema from 'apps/nestar-api/src/schemas/Car.model';
 		ScheduleModule.forRoot(),
 		MongooseModule.forFeature([{ name: 'Car', schema: CarSchema }]),
 		MongooseModule.forFeature([{ name: 'Member', schema: MemberSchema }]),
+		MongooseModule.forFeature([{ name: 'Follow', schema: FollowSchema }]),
 	],
 	controllers: [BatchController],
 	providers: [BatchService],

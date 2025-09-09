@@ -1,0 +1,26 @@
+services:
+  nestar-api:
+    container_name: nestar-api
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "4001:3005"
+    networks: 
+      - monorepo-network
+
+  nestar-batch:
+    container_name: nestar-batch
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile.batch
+    ports:
+      - "4002:3006"
+    networks: 
+      - monorepo-network
+
+networks:
+  monorepo-network:
+    driver: bridge
