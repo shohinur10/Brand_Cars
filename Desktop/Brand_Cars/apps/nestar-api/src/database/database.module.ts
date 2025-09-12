@@ -1,16 +1,35 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule, InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 @Module({
   imports: [
     MongooseModule.forRootAsync({
-      useFactory: () => ({
-        uri:
-          process.env.NODE_ENV === 'production'
-            ? process.env.MONGO_PROD // ✅ mos nom
-            : process.env.MONGO_DEV,  // ✅ mos nom
-      }),
+      useFactory: () => {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const mongoUri = isProduction ? process.env.MONGO_PROD : process.env.MONGO_DEV;
+        
+        if (!mongoUri) {
+          throw new Error(
+            `MongoDB connection string is not defined for ${isProduction ? 'production' : 'development'} environment`
+          );
+        }
+
+        console.log(`🔗 Connecting to MongoDB ${isProduction ? 'Production (BrandProd)' : 'Development'} database...`);
+        
+        return {
+          uri: mongoUri,
+          retryWrites: true,
+          w: 'majority',
+          maxPoolSize: 10,
+          serverSelectionTimeoutMS: 5000,
+          socketTimeoutMS: 45000,
+        };
+      },
     }),
   ],
   exports: [MongooseModule],
@@ -19,12 +38,12 @@ export class DatabaseModule {
   constructor(@InjectConnection() private readonly connection: Connection) {
     if (connection.readyState === 1) {
       console.log(
-        `✅ MongoDB is connected into ${
-          process.env.NODE_ENV === 'production' ? 'Production' : 'Development'
-        } mode`,
+        `✅ MongoDB is connected to ${
+          process.env.NODE_ENV === 'production' ? 'BrandProd Production' : 'Development'
+        } database successfully!`,
       );
     } else {
-      console.log('❌ DB is not connected!');
+      console.log('❌ MongoDB connection failed!');
     }
   }
 }
