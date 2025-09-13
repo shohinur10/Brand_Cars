@@ -8,12 +8,14 @@ services:
     ports:
       - "4001:3005"
     environment:
-      - NODE_ENV=production
-      - MONGO_PROD=mongodb+srv://your-username:your-password@brandprod-cluster.mongodb.net/brandcars_prod?retryWrites=true&w=majority
-      - MONGO_DEV=mongodb://localhost:27017/brandcars_dev
+      - NODE_ENV=development
+      - MONGO_PROD=mongodb://mongo:27017/brandcars_prod
+      - MONGO_DEV=mongodb://mongo:27017/brandcars_dev
       - JWT_SECRET=your-production-jwt-secret-key-here
       - JWT_EXPIRES_IN=7d
       - PORT=3005
+    depends_on:
+      - mongo
     networks: 
       - monorepo-network
 
@@ -26,14 +28,31 @@ services:
     ports:
       - "4002:3006"
     environment:
-      - NODE_ENV=production
-      - MONGO_PROD=mongodb+srv://your-username:your-password@brandprod-cluster.mongodb.net/brandcars_prod?retryWrites=true&w=majority
-      - MONGO_DEV=mongodb://localhost:27017/brandcars_dev
+      - NODE_ENV=development
+      - MONGO_PROD=mongodb://mongo:27017/brandcars_prod
+      - MONGO_DEV=mongodb://mongo:27017/brandcars_dev
       - JWT_SECRET=your-production-jwt-secret-key-here
       - JWT_EXPIRES_IN=7d
       - BATCH_PORT=3006
+    depends_on:
+      - mongo
     networks: 
       - monorepo-network
+
+  mongo:
+    container_name: brandcars-mongo
+    image: mongo:7.0
+    restart: always
+    ports:
+      - "27017:27017"
+    command: mongod --noauth
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - monorepo-network
+
+volumes:
+  mongo_data:
 
 networks:
   monorepo-network:

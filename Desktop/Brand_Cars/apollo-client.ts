@@ -4,7 +4,7 @@ import { onError } from '@apollo/client/link/error';
 
 // Create HTTP link to your GraphQL endpoint
 const httpLink = createHttpLink({
-  uri: process.env.REACT_APP_API_GRAPHQL_URL || 'http://localhost:3000/graphql', // Your backend GraphQL URL
+  uri: process.env.REACT_APP_API_GRAPHQL_URL || 'http://localhost:4001/graphql', // Your backend GraphQL URL
 });
 
 // Auth link to add authorization headers

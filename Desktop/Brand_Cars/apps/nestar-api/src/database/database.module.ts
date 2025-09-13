@@ -3,8 +3,10 @@ import { MongooseModule, InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import * as dotenv from 'dotenv';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables (only if not already set by Docker)
+if (!process.env.MONGO_PROD && !process.env.MONGO_DEV) {
+  dotenv.config();
+}
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ dotenv.config();
         }
 
         console.log(`🔗 Connecting to MongoDB ${isProduction ? 'Production (BrandProd)' : 'Development'} database...`);
+        console.log(`🔍 Connection URI: ${mongoUri.replace(/\/\/.*@/, '//***:***@')}`);
         
         return {
           uri: mongoUri,
