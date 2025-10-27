@@ -1,12 +1,11 @@
 #!/bin/bash
 
-#PRODUCTION
-git reset --hard 
+#production
+git reset --hard
 git checkout master
-git pull origin master 
+git pull origin master
 
-# Stop existing containers
+docker compose up -d
 docker compose down
-
-# Start with production configuration
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose build
+docker compose up -d

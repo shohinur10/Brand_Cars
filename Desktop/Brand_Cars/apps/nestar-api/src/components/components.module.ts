@@ -8,6 +8,8 @@ import { ViewModule } from './view/view.module';
 import { FollowModule } from './follow/follow.module';
 import { BoardArticleModule } from './board-article/board-article.module';
 import { CarModule } from './car/car.module';
+import { NotificationModule } from './notification/notification.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { CarModule } from './car/car.module';
     ViewModule,
     CommentModule, // ✅ Comment logic included through this
     FollowModule,
+    NotificationModule, // ✅ Notification system included
+    ChatModule, // ✅ Advanced chat system included
   ],
  
 })

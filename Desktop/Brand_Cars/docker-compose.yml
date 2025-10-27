@@ -1,72 +1,27 @@
 services:
+
   nestar-api:
-    container_name: nestar-api
+    container_name: job-board-ai
     restart: always
     build:
       context: .
       dockerfile: Dockerfile.api
     ports:
-      - "4001:3005"
-    environment:
-      - NODE_ENV=development
-      - MONGO_PROD=mongodb://mongo:27017/brandcars_prod
-      - MONGO_DEV=mongodb://mongo:27017/brandcars_dev
-      - JWT_SECRET=your-production-jwt-secret-key-here
-      - JWT_EXPIRES_IN=7d
-      - PORT=3005
-    depends_on:
-      - mongo
-    networks: 
+      - 4001:3005
+    networks:
       - monorepo-network
 
   nestar-batch:
     container_name: nestar-batch
-    restart: unless-stopped
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile.batch
     ports:
-      - "4002:3006"
-    environment:
-      - NODE_ENV=development
-      - MONGO_PROD=mongodb://mongo:27017/brandcars_prod
-      - MONGO_DEV=mongodb://mongo:27017/brandcars_dev
-      - JWT_SECRET=your-production-jwt-secret-key-here
-      - JWT_EXPIRES_IN=7d
-      - BATCH_PORT=3006
-    depends_on:
-      - mongo
-    networks: 
-      - monorepo-network
-
-  mongo:
-    container_name: brandcars-mongo
-    image: mongo:7.0
-    restart: always
-    ports:
-      - "27017:27017"
-    command: mongod --noauth
-    volumes:
-      - mongo_data:/data/db
+      - 4002:3006
     networks:
       - monorepo-network
-
-volumes:
-  mongo_data:
 
 networks:
   monorepo-network:
     driver: bridge
-
-
-
-
-     #Avto_salon localhost: 3001 <==> container:3000
-     #Brand_cars: localhost:4001 <==> container:3005
-     #Brand_cars: localhost:4002 <==> container:3006
-
-    #docker compose up -d
-    #docker compose stop
-    #docker compose start
-    #docker compose restart
-    #docker compose stop & docker compose rm -f

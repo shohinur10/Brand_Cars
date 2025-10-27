@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { MemberModule } from '../member/member.module';
 import { BoardArticleModule } from '../board-article/board-article.module';
 import { CarModule } from '../car/car.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports:[
@@ -19,7 +20,8 @@ import { CarModule } from '../car/car.module';
     AuthModule,
     MemberModule,
     CarModule,
-    BoardArticleModule
+    BoardArticleModule,
+    NotificationModule, // Import notification module for creating notifications
   ],
   providers: [CommentResolver, CommentService],
   exports: [CommentService]

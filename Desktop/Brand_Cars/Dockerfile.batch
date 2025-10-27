@@ -1,11 +1,9 @@
-FROM node:20.10.0
+FROM node:20
 
 WORKDIR /usr/src/nestar
 
 # Copy package files
 COPY package*.json ./
-COPY nest-cli.json ./
-COPY tsconfig*.json ./
 
 # Install dependencies
 RUN npm install
@@ -13,12 +11,11 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build both applications (API and Batch)
-RUN npm run build
-RUN npx nest build nestar-batch
+# Build the application
+RUN npm run build nestar-batch
 
 # Expose port
 EXPOSE 3006
 
-# Start the batch service
-CMD ["npm", "run", "start:prod:batch"]
+# Start the application
+CMD ["node", "dist/apps/nestar-batch/main.js"]

@@ -1,11 +1,9 @@
-FROM node:20.10.0
+FROM node:20
 
 WORKDIR /usr/src/nestar
 
 # Copy package files
 COPY package*.json ./
-COPY nest-cli.json ./
-COPY tsconfig*.json ./
 
 # Install dependencies
 RUN npm install
@@ -14,10 +12,10 @@ RUN npm install
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN npm run build nestar-api
 
 # Expose port
 EXPOSE 3005
 
 # Start the application
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/apps/nestar-api/main.js"]

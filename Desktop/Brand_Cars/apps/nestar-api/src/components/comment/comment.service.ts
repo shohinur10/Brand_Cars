@@ -11,6 +11,8 @@ import { Comments,Comment} from '../../libs/dto/comment/comment';
 import { lookupMember } from '../../libs/config';
 import { T } from '../../libs/types/common';
 import { CarService } from '../car/car.service';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationGroup } from '../../libs/enums/notification.enum';
 
 @Injectable()
 export class CommentService {
@@ -19,6 +21,7 @@ export class CommentService {
 		private readonly memberService: MemberService,
 		private readonly carService: CarService,
 		private readonly boardArticleService: BoardArticleService,
+		private readonly notificationService: NotificationService,
 	) {}
 
 	public async createComment(memberId: ObjectId, input: CommentInput): Promise<Comment> {
@@ -55,6 +58,9 @@ export class CommentService {
 				});
 				break;
 		}
+
+		// Create notification when someone comments on content
+		await this.createCommentNotification(memberId, input);
 
 		if (!result) throw new InternalServerErrorException(Message.CREATE_FAILED);
 
@@ -126,5 +132,49 @@ export class CommentService {
 		const result = await this.commentModel.findByIdAndDelete(input).exec();
 		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
 		return result;
+	}
+
+	// Helper method to create comment notification
+	private async createCommentNotification(memberId: ObjectId, input: CommentInput): Promise<void> {
+		try {
+			// Don't create notification if user is commenting on their own content
+			if (memberId.toString() === input.commentRefId.toString()) {
+				return;
+			}
+
+			let notificationGroup: NotificationGroup;
+			let receiverId: ObjectId;
+
+			// Determine notification group and receiver based on comment group
+			switch (input.commentGroup) {
+				case CommentGroup.CARS:
+					notificationGroup = NotificationGroup.CARS;
+					// Get car owner ID - you'll need to fetch this from car service
+					// For now, we'll use a placeholder - you may need to inject CarService
+					receiverId = input.commentRefId; // This should be the car owner's ID
+					break;
+				case CommentGroup.ARTICLE:
+					notificationGroup = NotificationGroup.ARTICLE;
+					// Get article author ID
+					receiverId = input.commentRefId; // This should be the article author's ID
+					break;
+				case CommentGroup.MEMBER:
+					notificationGroup = NotificationGroup.MEMBER;
+					receiverId = input.commentRefId; // This is the member being commented on
+					break;
+				default:
+					return; // Unknown comment group
+			}
+
+			await this.notificationService.createCommentNotification(
+				memberId,        // author (person who commented)
+				receiverId,      // receiver (person who owns the content)
+				notificationGroup,
+				input.commentRefId // target ID (car, article, or member)
+			);
+		} catch (err) {
+			console.log('❌ Error creating comment notification:', err.message);
+			// Don't throw error - notification failure shouldn't break the main action
+		}
 	}
 }

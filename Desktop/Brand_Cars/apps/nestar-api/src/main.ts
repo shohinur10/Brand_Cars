@@ -7,6 +7,9 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { serverConfig } from './config/server.config';
+import * as cors from 'cors';
+import * as fs from 'fs';
+import * as https from 'https';
 
 // bu yerda global integration qurvoryapmiz 
 async function bootstrap() { // call qismi
@@ -18,14 +21,27 @@ async function bootstrap() { // call qismi
     disableErrorMessages: false, // Keep error messages for debugging
   })); // Middleware for validating incoming requests
   app.useGlobalInterceptors(new LoggingInterceptor()); // Middleware for logging requests and responses
-  app.enableCors({
-    origin: serverConfig.corsOrigins,
+  // Use Express CORS middleware directly
+  app.use(cors.default({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      const allowedOrigins = serverConfig.corsOrigins;
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.log('CORS: Origin not allowed:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With']
-  }); // Enable CORS for specific origins including the server 
+  })); 
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })); // Middleware for handling file uploads in GraphQL
   app.use('/uploads',express.static('./uploads')); // Serve static files from the uploads directory
+  app.use('/public',express.static('./public')); // Serve static files from the public directory (for logos, etc.)
 
   // Get the underlying Express instance
   const expressApp = app.getHttpAdapter().getInstance();
@@ -157,6 +173,29 @@ async function bootstrap() { // call qismi
   });
 
   app.useWebSocketAdapter(new WsAdapter(app));
-  await app.listen(process.env.PORT_API ?? 3000);  // uploads faile ochib beryapiz static qilib tashqi olamga 
+  
+  // Check if SSL certificates are provided for HTTPS
+  const sslCertPath = process.env.SSL_CERT_PATH;
+  const sslKeyPath = process.env.SSL_KEY_PATH;
+  
+  if (sslCertPath && sslKeyPath && fs.existsSync(sslCertPath) && fs.existsSync(sslKeyPath)) {
+    // HTTPS configuration
+    const httpsOptions = {
+      key: fs.readFileSync(sslKeyPath),
+      cert: fs.readFileSync(sslCertPath),
+    };
+    
+    const httpsServer = https.createServer(httpsOptions, app.getHttpAdapter().getInstance());
+    await app.init();
+    httpsServer.listen(process.env.PORT ?? 3005, () => {
+      console.log(`🚀 HTTPS Server running on port ${process.env.PORT ?? 3005}`);
+      console.log(`🔒 SSL enabled for domain: avtonova.store`);
+    });
+  } else {
+    // HTTP configuration (fallback)
+    await app.listen(process.env.PORT ?? 3005);
+    console.log(`🚀 HTTP Server running on port ${process.env.PORT ?? 3005}`);
+    console.log(`⚠️  SSL not configured - using HTTP only`);
+  }
 }
 bootstrap(); // bu oddiy function

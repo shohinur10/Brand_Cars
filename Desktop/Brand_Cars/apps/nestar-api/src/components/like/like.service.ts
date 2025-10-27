@@ -10,10 +10,15 @@ import { OrdinaryInquiry } from '../../libs/dto/car/car.input';
 import { lookupFavorite } from '../../libs/config';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { Car, Cars } from '../../libs/dto/car/car';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationGroup } from '../../libs/enums/notification.enum';
 
 @Injectable()
 export class LikeService {
-	constructor(@InjectModel('Like') private readonly likeModel: Model<Like>) {}
+	constructor(
+		@InjectModel('Like') private readonly likeModel: Model<Like>,
+		private readonly notificationService: NotificationService,
+	) {}
 
 	public async toggleLike(input: LikeInput): Promise<number> {
 		const search: T = {
@@ -30,6 +35,10 @@ export class LikeService {
 		} else {
 			try {
 				await this.likeModel.create(input);
+				
+				// Create notification when someone likes content
+				await this.createLikeNotification(input);
+				
 			} catch (err) {
 				console.log('Error, Service.model', err.message);
 				throw new BadRequestException(Message.CREATE_FAILED);
@@ -37,6 +46,50 @@ export class LikeService {
 		}
 		console.log(` - Like modifier ${modifier} - `);
 		return modifier;
+	}
+
+	// Helper method to create like notification
+	private async createLikeNotification(input: LikeInput): Promise<void> {
+		try {
+			// Don't create notification if user is liking their own content
+			if (input.memberId.toString() === input.likeRefId.toString()) {
+				return;
+			}
+
+			let notificationGroup: NotificationGroup;
+			let receiverId: ObjectId;
+
+			// Determine notification group and receiver based on like group
+			switch (input.likeGroup) {
+				case LikeGroup.CARS:
+					notificationGroup = NotificationGroup.CARS;
+					// Get car owner ID - you'll need to fetch this from car service
+					// For now, we'll use a placeholder - you may need to inject CarService
+					receiverId = input.likeRefId; // This should be the car owner's ID
+					break;
+				case LikeGroup.ARTICLE:
+					notificationGroup = NotificationGroup.ARTICLE;
+					// Get article author ID
+					receiverId = input.likeRefId; // This should be the article author's ID
+					break;
+				case LikeGroup.MEMBER:
+					notificationGroup = NotificationGroup.MEMBER;
+					receiverId = input.likeRefId; // This is the member being liked
+					break;
+				default:
+					return; // Unknown like group
+			}
+
+			await this.notificationService.createLikeNotification(
+				input.memberId, // author (person who liked)
+				receiverId,     // receiver (person who owns the content)
+				notificationGroup,
+				input.likeRefId // target ID (car, article, or member)
+			);
+		} catch (err) {
+			console.log('❌ Error creating like notification:', err.message);
+			// Don't throw error - notification failure shouldn't break the main action
+		}
 	}
 
 	public async checkLikeExistence(input: LikeInput): Promise<MeLiked[]> {
