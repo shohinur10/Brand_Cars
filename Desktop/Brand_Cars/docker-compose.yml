@@ -8,6 +8,12 @@ services:
       dockerfile: Dockerfile.api
     ports:
       - 4001:3005
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - MONGO_PROD=${MONGO_PROD}
+      - MONGO_DEV=${MONGO_DEV}
+    env_file:
+      - .env
     networks:
       - monorepo-network
 
@@ -19,6 +25,12 @@ services:
       dockerfile: Dockerfile.batch
     ports:
       - 4002:3006
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - MONGO_PROD=${MONGO_PROD}
+      - MONGO_DEV=${MONGO_DEV}
+    env_file:
+      - .env
     networks:
       - monorepo-network
 

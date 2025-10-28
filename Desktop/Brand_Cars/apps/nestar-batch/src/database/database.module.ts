@@ -29,8 +29,10 @@ if (!process.env.MONGO_PROD && !process.env.MONGO_DEV) {
 					retryWrites: true,
 					w: 'majority',
 					maxPoolSize: 10,
-					serverSelectionTimeoutMS: 5000,
+					serverSelectionTimeoutMS: 30000, // Increased for Atlas connections
 					socketTimeoutMS: 45000,
+					connectTimeoutMS: 30000, // Added for initial connection
+					heartbeatFrequencyMS: 10000, // Added for Atlas stability
 				};
 			},
 		}),

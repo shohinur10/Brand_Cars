@@ -1,0 +1,21 @@
+# Environment Configuration
+# Copy this file to .env and fill in your actual values
+
+# Node Environment (production or development)
+NODE_ENV=production
+
+# MongoDB Production Connection String
+# Format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
+MONGO_PROD=mongodb+srv://username:password@cluster.mongodb.net/BrandProd?retryWrites=true&w=majority
+
+# MongoDB Development Connection String
+# Format: mongodb://localhost:27017/database or mongodb+srv://...
+MONGO_DEV=mongodb+srv://username:password@cluster.mongodb.net/BrandDev?retryWrites=true&w=majority
+
+# Important Notes for MongoDB Atlas:
+# 1. Replace 'username' and 'password' with your Atlas database user credentials
+# 2. Replace 'cluster' with your Atlas cluster name
+# 3. Ensure your server IP is whitelisted in Atlas Network Access
+# 4. For production servers, use 72.60.236.198/32 in the Atlas IP whitelist
+# 5. Connection strings should include ?retryWrites=true&w=majority parameters
+
