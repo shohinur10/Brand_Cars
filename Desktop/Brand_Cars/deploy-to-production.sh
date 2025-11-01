@@ -92,3 +92,6 @@ echo "  docker logs job-board-ai"
 echo ""
 echo "📖 For detailed instructions, see: PRODUCTION_DEPLOYMENT.md"
 
+
+
+

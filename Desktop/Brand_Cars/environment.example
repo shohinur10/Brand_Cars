@@ -19,3 +19,6 @@ MONGO_DEV=mongodb+srv://username:password@cluster.mongodb.net/BrandDev?retryWrit
 # 4. For production servers, use 72.60.236.198/32 in the Atlas IP whitelist
 # 5. Connection strings should include ?retryWrites=true&w=majority parameters
 
+
+
+
